@@ -23,8 +23,7 @@ before_install:
     - npm i -g npm@6.5.0
 
 install:
-    - if git show-ref --quiet refs/heads/$DEVELOPMENT_BRANCH; then git checkout $DEVELOPMENT_BRANCH; else git checkout -t origin/$DEVELOPMENT_BRANCH; fi
-    - git checkout $TRAVIS_BRANCH
+    - if git show-ref --quiet refs/heads/$DEVELOPMENT_BRANCH; then echo "already on dev branch"; else git checkout -t origin/$DEVELOPMENT_BRANCH; git checkout $TRAVIS_BRANCH; fi
     - echo "ALTER USER 'travis'@'localhost' IDENTIFIED BY 'travis';" | mysql -u root
     - zip -rqm platform.zip .
     - git clone --branch $DEVELOPMENT_BRANCH https://github.com/shopware/development.git
@@ -58,7 +57,7 @@ jobs:
                 - php dev-ops/analyze/generate-composer.php
                 - php dev-ops/analyze/vendor/bin/ecs check vendor/shopware/platform/src --config vendor/shopware/platform/easy-coding-standard.yml
                 - php dev-ops/analyze/phpstan-config-generator.php
-                - php dev-ops/analyze/vendor/bin/phpstan analyze --configuration vendor/shopware/platform/phpstan.neon
+                - php dev-ops/analyze/vendor/bin/phpstan analyze --autoload-file=dev-ops/analyze/vendor/autoload.php --configuration vendor/shopware/platform/phpstan.neon
                 - >
                     for module in $(ls platform/src/); do
                         echo "[PSALM: scan $module]"

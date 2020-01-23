@@ -1,6 +1,6 @@
 import template from './sw-multi-select.html.twig';
 
-const { Component } = Shopware;
+const { Component, Mixin } = Shopware;
 const { debounce, get } = Shopware.Utils;
 
 /**
@@ -31,13 +31,16 @@ Component.register('sw-multi-select', {
         event: 'change'
     },
 
+    mixins: [
+        Mixin.getByName('remove-api-error')
+    ],
+
     props: {
         options: {
             type: Array,
             required: true
         },
         value: {
-            type: [Array, Object],
             required: true,
             validator(value) {
                 return Array.isArray(value) || value === null || value === undefined;
